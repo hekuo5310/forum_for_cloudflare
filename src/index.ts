@@ -500,11 +500,15 @@ export default {
 				await env.forum_db.prepare('DELETE FROM likes WHERE post_id IN (SELECT id FROM posts WHERE author_id = ?)').bind(user_id).run();
 				await env.forum_db.prepare('DELETE FROM comments WHERE post_id IN (SELECT id FROM posts WHERE author_id = ?)').bind(user_id).run();
 
-				// 3. Delete user's activity
+				// 3. Detach child comments that reply to user's comments
+				await env.forum_db.prepare('UPDATE comments SET parent_id = NULL WHERE parent_id IN (SELECT id FROM comments WHERE author_id = ?)').bind(user_id).run();
+
+				// 4. Delete user's activity
 				await env.forum_db.prepare('DELETE FROM likes WHERE user_id = ?').bind(user_id).run();
 				await env.forum_db.prepare('DELETE FROM comments WHERE author_id = ?').bind(user_id).run();
-				
-				// 4. Delete posts and user
+
+				// 5. Delete sessions, posts and user
+				await env.forum_db.prepare('DELETE FROM sessions WHERE user_id = ?').bind(user_id).run();
 				await env.forum_db.prepare('DELETE FROM posts WHERE author_id = ?').bind(user_id).run();
 				await env.forum_db.prepare('DELETE FROM users WHERE id = ?').bind(user_id).run();
 				
@@ -1033,14 +1037,18 @@ export default {
 				await env.forum_db.prepare('DELETE FROM likes WHERE post_id IN (SELECT id FROM posts WHERE author_id = ?)').bind(id).run();
 				await env.forum_db.prepare('DELETE FROM comments WHERE post_id IN (SELECT id FROM posts WHERE author_id = ?)').bind(id).run();
 
-				// 2. Delete the user's own activity (likes and comments they made)
+				// 2. Detach child comments that reply to the user's comments
+				await env.forum_db.prepare('UPDATE comments SET parent_id = NULL WHERE parent_id IN (SELECT id FROM comments WHERE author_id = ?)').bind(id).run();
+
+				// 3. Delete the user's own activity (likes and comments they made)
 				await env.forum_db.prepare('DELETE FROM likes WHERE user_id = ?').bind(id).run();
 				await env.forum_db.prepare('DELETE FROM comments WHERE author_id = ?').bind(id).run();
 
-				// 3. Delete the user's posts
+				// 4. Delete sessions and the user's posts
+				await env.forum_db.prepare('DELETE FROM sessions WHERE user_id = ?').bind(id).run();
 				await env.forum_db.prepare('DELETE FROM posts WHERE author_id = ?').bind(id).run();
 
-				// 4. Finally, delete the user
+				// 5. Finally, delete the user
 				const userToDelete = await env.forum_db.prepare('SELECT email, username FROM users WHERE id = ?').bind(id).first();
 				await env.forum_db.prepare('DELETE FROM users WHERE id = ?').bind(id).run();
 				
