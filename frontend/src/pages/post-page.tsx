@@ -522,7 +522,10 @@ export function PostPage() {
 														) : null}
 													</div>
 												</div>
-												<div className="mt-2 whitespace-pre-wrap text-sm">{c.content}</div>
+												<div
+													className="prose prose-sm mt-2 max-w-none break-words [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
+													dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(c.content || '') }}
+												/>
 												{c.replies && c.replies.length ? (
 													<div className="mt-3 space-y-2 border-l pl-3">
 														{c.replies.map((r) => (
@@ -560,7 +563,10 @@ export function PostPage() {
 																		</Button>
 																	) : null}
 																</div>
-																<div className="mt-1 whitespace-pre-wrap text-sm">{r.content}</div>
+																<div
+																className="prose prose-sm mt-1 max-w-none break-words [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:my-1"
+																dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(r.content || '') }}
+															/>
 															</div>
 														))}
 													</div>
