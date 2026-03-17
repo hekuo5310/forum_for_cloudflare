@@ -1637,12 +1637,12 @@ export default {
 				if (parent_id) {
 					const parent = await env.forum_db.prepare('SELECT parent_id, author_id FROM comments WHERE id = ?').bind(parent_id).first();
 					
-					if (parent) {
-						if (parent.parent_id !== null) {
-							// Level 3 attempt detected.
-							// 1. Fetch username of the user being replied to
-							const targetUser = await env.forum_db.prepare('SELECT username FROM users WHERE id = ?').bind(parent.author_id).first();
-							const targetName = targetUser.username;
+						if (parent) {
+							if (parent.parent_id !== null) {
+								// Level 3 attempt detected.
+								// 1. Fetch username of the user being replied to
+								const targetUser = await env.forum_db.prepare('SELECT username FROM users WHERE id = ?').bind(parent.author_id).first();
+								const targetName = targetUser?.username ? String(targetUser.username) : '用户';
 
 							// 2. Rewrite content and parent_id
 							content = `@${targetName} ${content}`;
@@ -1669,9 +1669,9 @@ export default {
 					).bind(postId).first();
 
 					// Fetch commenter name
-					const commenter = await env.forum_db.prepare('SELECT username FROM users WHERE id = ?').bind(userPayload.id).first();
-					const commenterName = commenter.username;
-					const postUrl = `https://i.2x.nz/posts/${postId}`;
+						const commenter = await env.forum_db.prepare('SELECT username FROM users WHERE id = ?').bind(userPayload.id).first();
+						const commenterName = commenter?.username ? String(commenter.username) : '有用户';
+						const postUrl = `https://i.2x.nz/posts/${postId}`;
 
 					// Notify Post Author (if not self)
 					if (post && post.author_id !== userPayload.id && post.email_notifications === 1) {
@@ -1700,13 +1700,13 @@ export default {
 								'SELECT email, email_notifications, username FROM users WHERE id = ?'
 							).bind(notifyUserId).first();
 
-							if (parentCommentUser && notifyUserId !== userPayload.id && parentCommentUser.email_notifications === 1) {
-								// Avoid double notification if parent author is also post author (already handled above)
-								if (notifyUserId !== post.author_id) {
-									const replyHtml = `
-										<h1>New Reply to your comment</h1>
-										<p><strong>${commenterName}</strong> replied to your comment on "<strong>${post.title}</strong>":</p>
-										<blockquote>${content}</blockquote>
+								if (parentCommentUser && notifyUserId !== userPayload.id && parentCommentUser.email_notifications === 1) {
+									// Avoid double notification if parent author is also post author (already handled above)
+									if (!post || notifyUserId !== post.author_id) {
+										const replyHtml = `
+											<h1>New Reply to your comment</h1>
+											<p><strong>${commenterName}</strong> replied to your comment${post ? ` on "<strong>${post.title}</strong>"` : ''}:</p>
+											<blockquote>${content}</blockquote>
 										<p><a href="${postUrl}">View Reply</a></p>
 										<p style="font-size:0.8em;color:#666;">You received this email because you are subscribed to notifications.</p>
 									`;
