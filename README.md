@@ -85,17 +85,16 @@ AWS_ENDPOINT=https://your-account-id.r2.cloudflarestorage.com
 AWS_BUCKET=your-bucket-name
 ```
 
-### 6. 配置 SMTP (可选)
+### 6. 配置邮件服务 (可选)
 
-如需邮箱验证功能，还需配置 SMTP 相关变量：
+如需邮箱验证功能，需配置 Resend API：
 
 ```bash
-SMTP_HOST=smtp.example.com
-SMTP_PORT=587
-SMTP_USER=your-email@example.com
-SMTP_PASSWORD=your-smtp-password
-SMTP_FROM=noreply@example.com
+RESEND_KEY=re_xxxxxxxxxxxx
+RESEND_FROM=noreply@yourdomain.com  # 可选，默认使用 onboarding@resend.dev
 ```
+
+获取 API Key：访问 [Resend](https://resend.com/api-keys)
 
 ### 7. 本地开发
 
