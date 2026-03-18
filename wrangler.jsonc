@@ -28,17 +28,16 @@
 	],
 	"d1_databases": [
 		{
-			"binding": "forum_db",
-			"database_name": "forum-db",
-			"database_id": "e789efde-b66b-401b-8ad9-a13099357cb6",
-			"remote": true,
-			"migrations_dir": "migrations"
-		},
-		{
 			"binding": "_2x_forum_db",
 			"database_name": "2x-forum-db",
 			"database_id": "4c7e7f00-05ac-4247-b7a7-6df06866f65c",
 			"remote": true
+		},
+	],
+	"r2_buckets": [
+		{
+			"binding": "IMAGES",
+			"bucket_name": "forum-images"
 		}
 	]
 	/**
